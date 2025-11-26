@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Sistema de Alumnos{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">Sistema de Gestión de Alumnos</h1>
+        <p class="lead mb-4">Plataforma completa para administrar información de estudiantes de manera eficiente y segura.</p>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'alumnos:dashboard' %}" class="btn btn-light btn-lg me-3">
+                <i class="fas fa-tachometer-alt me-2"></i>Ir al Dashboard
+            </a>
+        {% else %}
+            <a href="{% url 'registro' %}" class="btn btn-light btn-lg me-3">
+                <i class="fas fa-user-plus me-2"></i>Comenzar Ahora
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col">
+                <h2 class="fw-bold">Características Principales</h2>
+                <p class="text-muted">Todo lo que necesitas para gestionar alumnos</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card card-hover h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mx-auto mb-3" 
+                             style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Gestión de Alumnos</h5>
+                        <p class="card-text text-muted">Administra la información completa de tus alumnos de forma organizada y eficiente.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card card-hover h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-success bg-gradient text-white rounded-circle mx-auto mb-3" 
+                             style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-file-pdf fa-2x"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Reportes en PDF</h5>
+                        <p class="card-text text-muted">Genera y envía reportes profesionales en formato PDF automáticamente.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card card-hover h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-info bg-gradient text-white rounded-circle mx-auto mb-3" 
+                             style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-search fa-2x"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Scraping Educativo</h5>
+                        <p class="card-text text-muted">Busca y recopila información educativa automáticamente desde fuentes confiables.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

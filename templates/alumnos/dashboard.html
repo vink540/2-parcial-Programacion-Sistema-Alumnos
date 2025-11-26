@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Sistema de Alumnos{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-2"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h1>
+                    <p class="text-muted">Bienvenido, {{ user.username }}. Gestiona tus alumnos aquí.</p>
+                </div>
+                <a href="{% url 'alumnos:crear_alumno' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Nuevo Alumno
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Debug Temporal -->
+    {% if alumnos %}
+    <div class="alert alert-info">
+        <h6>Debug Info (temporal)</h6>
+        <p>Total alumnos: {{ alumnos.count }}</p>
+        <p>Primer alumno: {{ alumnos.first.nombre }} {{ alumnos.first.apellido }}</p>
+        <p>Clase del primero: {{ alumnos.first.clase_completa }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Alumnos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ alumnos.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Por Clase
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ alumnos.count }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Último Registro
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% if alumnos.first %}
+                                    {{ alumnos.first.fecha_creacion|date:"d/m/Y" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Acciones
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">PDF</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-pdf fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alumnos Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-users me-2"></i>Lista de Alumnos
+                    </h6>
+                    <span class="badge bg-primary">{{ alumnos.count }} registros</span>
+                </div>
+                <div class="card-body">
+                    {% if alumnos %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Apellido</th>
+                                        <th>DNI</th>
+                                        <th>Clase</th>
+                                        <th>Fecha Registro</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for alumno in alumnos %}
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-user me-2 text-muted"></i>
+                                            <strong>{{ alumno.nombre }}</strong>
+                                        </td>
+                                        <td>{{ alumno.apellido }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ alumno.dni }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ alumno.clase_completa }}</span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">{{ alumno.fecha_creacion|date:"d/m/Y H:i" }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <form method="post" action="{% url 'alumnos:enviar_pdf' alumno.id %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary" 
+                                                            title="Enviar PDF por correo">
+                                                        <i class="fas fa-file-pdf me-1"></i>PDF
+                                                    </button>
+                                                </form>
+                                                <a href="{% url 'alumnos:editar_alumno' alumno.id %}" class="btn btn-sm btn-outline-warning"
+                                                   title="Editar alumno">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'alumnos:eliminar_alumno' alumno.id %}" class="btn btn-sm btn-outline-danger"
+                                                   title="Eliminar alumno">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-users fa-4x text-muted mb-4"></i>
+                            <h4 class="text-muted">No hay alumnos registrados</h4>
+                            <p class="text-muted mb-4">Comienza agregando tu primer alumno al sistema.</p>
+                            <a href="{% url 'alumnos:crear_alumno' %}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus me-2"></i>Agregar Primer Alumno
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: #6e707e;
+}
+
+.btn-group .btn {
+    margin-right: 0.25rem;
+}
+</style>
+{% endblock %}

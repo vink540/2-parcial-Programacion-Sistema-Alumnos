@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}Búsqueda Educativa - Sistema de Alumnos{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-2">
+                        <i class="fas fa-search me-2 text-info"></i>Búsqueda Educativa
+                    </h1>
+                    <p class="text-muted">Busca información educativa en Wikipedia</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-search me-2"></i>Buscar Información
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="searchForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="palabra_clave" class="form-label fw-bold">
+                                    <i class="fas fa-keyboard me-2 text-info"></i>Palabra Clave *
+                                </label>
+                                <input type="text" class="form-control" id="palabra_clave" 
+                                       name="palabra_clave" value="{{ palabra_clave }}"
+                                       placeholder="Ej: Matemáticas, Historia, Ciencia..." required>
+                                <div class="form-text">Ingresa el tema que deseas investigar</div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="email_destino" class="form-label fw-bold">
+                                    <i class="fas fa-envelope me-2 text-info"></i>Email para enviar
+                                </label>
+                                <input type="email" class="form-control" id="email_destino" 
+                                       name="email_destino" value="{{ user.email }}"
+                                       placeholder="tu@email.com">
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button type="submit" name="accion" value="buscar" 
+                                            class="btn btn-info">
+                                        <i class="fas fa-search me-2"></i>Buscar
+                                    </button>
+                                    
+                                    {% if resultados %}
+                                    <button type="submit" name="accion" value="enviar" 
+                                            class="btn btn-success">
+                                        <i class="fas fa-paper-plane me-2"></i>Enviar por Correo
+                                    </button>
+                                    
+                                    <button type="button" onclick="clearSearch()" 
+                                            class="btn btn-outline-secondary">
+                                        <i class="fas fa-times me-2"></i>Limpiar
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    {% if resultados %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>Resultados de: "{{ palabra_clave }}"
+                    </h5>
+                    <span class="badge bg-light text-dark">{{ resultados|length }} resultados</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="5%">#</th>
+                                    <th width="25%">Título</th>
+                                    <th width="50%">Descripción</th>
+                                    <th width="10%">Fuente</th>
+                                    <th width="10%">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for resultado in resultados %}
+                                <tr>
+                                    <td class="fw-bold text-center">{{ forloop.counter }}</td>
+                                    <td>
+                                        <strong class="text-primary">{{ resultado.titulo }}</strong>
+                                    </td>
+                                    <td>
+                                        <p class="mb-1">{{ resultado.extracto|default:"Sin descripción disponible" }}</p>
+                                        {% if resultado.imagen %}
+                                        <small class="text-muted">
+                                            <i class="fas fa-image me-1"></i>Incluye imagen
+                                        </small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ resultado.tipo }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{{ resultado.url }}" target="_blank" 
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="Ver en Wikipedia">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% elif request.method == 'POST' and not resultados %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-warning text-center">
+                <i class="fas fa-search fa-2x mb-3"></i>
+                <h4>No se encontraron resultados</h4>
+                <p>Intenta con otros términos de búsqueda o verifica la conexión a internet.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Help Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2 text-info"></i>Información
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-database me-2"></i>Fuente de Datos</h6>
+                            <p class="small text-muted">
+                                Los resultados provienen de Wikipedia usando su API oficial, 
+                                garantizando información confiable y actualizada.
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-envelope me-2"></i>Envío por Correo</h6>
+                            <p class="small text-muted">
+                                Puedes enviar los resultados a tu email para consultarlos 
+                                posteriormente o compartirlos.
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-lightbulb me-2"></i>Sugerencias</h6>
+                            <p class="small text-muted">
+                                Usa términos específicos para mejores resultados. 
+                                Ej: "Álgebra lineal" en lugar de "matemáticas".
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function clearSearch() {
+    document.getElementById('palabra_clave').value = '';
+    document.getElementById('searchForm').submit();
+}
+
+// Mostrar loading al enviar
+document.getElementById('searchForm').addEventListener('submit', function(e) {
+    const submitBtn = e.submitter;
+    if (submitBtn) {
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Procesando...';
+        submitBtn.disabled = true;
+        
+        // Restaurar después de 5 segundos (por si hay error)
+        setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }, 5000);
+    }
+});
+</script>
+
+<style>
+.card {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: #6e707e;
+}
+
+.btn {
+    border-radius: 0.5rem;
+}
+</style>
+{% endblock %}

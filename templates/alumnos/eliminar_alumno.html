@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Alumno - Sistema de Alumnos{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-2 text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Alumno
+                    </h1>
+                    <p class="text-muted">Confirmar eliminación</p>
+                </div>
+                <a href="{% url 'alumnos:dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </a>
+            </div>
+
+            <!-- Warning Card -->
+            <div class="card border-danger shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-circle me-2"></i>Confirmar Eliminación
+                    </h5>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                        <h4 class="alert-heading">¡Precaución!</h4>
+                        <p>Estás a punto de eliminar al alumno:</p>
+                        <h5 class="text-dark">{{ alumno.nombre }} {{ alumno.apellido }}</h5>
+                        <hr>
+                        <p class="mb-0">
+                            <strong>DNI:</strong> {{ alumno.dni }}<br>
+                            <strong>Clase:</strong> {{ alumno.clase_completa }}<br>
+                            <strong>Fecha registro:</strong> {{ alumno.fecha_creacion|date:"d/m/Y" }}
+                        </p>
+                    </div>
+
+                    <p class="text-muted mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Esta acción no se puede deshacer. Todos los datos del alumno se perderán permanentemente.
+                    </p>
+
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="fas fa-trash me-2"></i>Sí, Eliminar Alumno
+                        </button>
+                    </form>
+                    <a href="{% url 'alumnos:dashboard' %}" class="btn btn-outline-secondary btn-lg ms-2">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.btn {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+}
+</style>
+{% endblock %}
