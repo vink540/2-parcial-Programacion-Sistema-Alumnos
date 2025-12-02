@@ -12,7 +12,7 @@
                     <h1 class="h3 mb-2">
                         <i class="fas fa-search me-2 text-info"></i>Búsqueda Educativa
                     </h1>
-                    <p class="text-muted">Busca información educativa en Wikipedia</p>
+                    <p class="text-muted">Busca información educativa en Wikipedia usando su API oficial</p>
                 </div>
             </div>
         </div>
@@ -24,7 +24,7 @@
             <div class="card shadow">
                 <div class="card-header bg-info text-white">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-search me-2"></i>Buscar Información
+                        <i class="fas fa-search me-2"></i>Buscar en Wikipedia
                     </h5>
                 </div>
                 <div class="card-body p-4">
@@ -39,7 +39,7 @@
                                 <input type="text" class="form-control" id="palabra_clave" 
                                        name="palabra_clave" value="{{ palabra_clave }}"
                                        placeholder="Ej: Matemáticas, Historia, Ciencia..." required>
-                                <div class="form-text">Ingresa el tema que deseas investigar</div>
+                                <div class="form-text">Ingresa el tema que deseas investigar en Wikipedia</div>
                             </div>
                             
                             <div class="col-md-4 mb-3">
@@ -57,20 +57,19 @@
                             <div class="col-12">
                                 <div class="d-flex gap-2 flex-wrap">
                                     <button type="submit" name="accion" value="buscar" 
-                                            class="btn btn-info">
-                                        <i class="fas fa-search me-2"></i>Buscar
+                                            class="btn btn-info btn-lg">
+                                        <i class="fas fa-search me-2"></i>Buscar en Wikipedia
                                     </button>
                                     
                                     {% if resultados %}
                                     <button type="submit" name="accion" value="enviar" 
-                                            class="btn btn-success">
+                                            class="btn btn-success btn-lg">
                                         <i class="fas fa-paper-plane me-2"></i>Enviar por Correo
                                     </button>
                                     
-                                    <button type="button" onclick="clearSearch()" 
-                                            class="btn btn-outline-secondary">
-                                        <i class="fas fa-times me-2"></i>Limpiar
-                                    </button>
+                                    <a href="{% url 'scraper:scraper' %}" class="btn btn-outline-secondary btn-lg">
+                                        <i class="fas fa-redo me-2"></i>Nueva Búsqueda
+                                    </a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -87,10 +86,15 @@
         <div class="col-12">
             <div class="card shadow">
                 <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-list me-2"></i>Resultados de: "{{ palabra_clave }}"
-                    </h5>
-                    <span class="badge bg-light text-dark">{{ resultados|length }} resultados</span>
+                    <div>
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list me-2"></i>Resultados de: "{{ palabra_clave }}"
+                        </h5>
+                        <small class="opacity-75">Fuente: Wikipedia API</small>
+                    </div>
+                    <div>
+                        <span class="badge bg-light text-dark fs-6">{{ resultados|length }} resultados</span>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -107,27 +111,30 @@
                             <tbody>
                                 {% for resultado in resultados %}
                                 <tr>
-                                    <td class="fw-bold text-center">{{ forloop.counter }}</td>
-                                    <td>
+                                    <td class="fw-bold text-center align-middle">{{ forloop.counter }}</td>
+                                    <td class="align-middle">
                                         <strong class="text-primary">{{ resultado.titulo }}</strong>
-                                    </td>
-                                    <td>
-                                        <p class="mb-1">{{ resultado.extracto|default:"Sin descripción disponible" }}</p>
                                         {% if resultado.imagen %}
+                                        <br>
                                         <small class="text-muted">
                                             <i class="fas fa-image me-1"></i>Incluye imagen
                                         </small>
                                         {% endif %}
                                     </td>
-                                    <td>
-                                        <span class="badge bg-info">{{ resultado.tipo }}</span>
+                                    <td class="align-middle">
+                                        <p class="mb-1">{{ resultado.extracto }}</p>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
+                                        <span class="badge bg-info">
+                                            <i class="fab fa-wikipedia-w me-1"></i>{{ resultado.tipo }}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle">
                                         <div class="btn-group">
                                             <a href="{{ resultado.url }}" target="_blank" 
                                                class="btn btn-sm btn-outline-primary"
                                                title="Ver en Wikipedia">
-                                                <i class="fas fa-external-link-alt"></i>
+                                                <i class="fas fa-external-link-alt"></i> Ver
                                             </a>
                                         </div>
                                     </td>
@@ -135,6 +142,22 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Datos obtenidos de la API oficial de Wikipedia
+                            </small>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                Búsqueda realizada: {% now "d/m/Y H:i" %}
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -146,57 +169,73 @@
             <div class="alert alert-warning text-center">
                 <i class="fas fa-search fa-2x mb-3"></i>
                 <h4>No se encontraron resultados</h4>
-                <p>Intenta con otros términos de búsqueda o verifica la conexión a internet.</p>
+                <p class="mb-3">Intenta con otros términos de búsqueda como:</p>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <span class="badge bg-secondary">Matemáticas</span>
+                    <span class="badge bg-secondary">Historia</span>
+                    <span class="badge bg-secondary">Ciencia</span>
+                    <span class="badge bg-secondary">Geografía</span>
+                    <span class="badge bg-secondary">Literatura</span>
+                </div>
             </div>
         </div>
     </div>
     {% endif %}
 
-    <!-- Help Section -->
+    <!-- Info Section -->
+    {% if not resultados %}
     <div class="row mt-4">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <h6 class="mb-0">
-                        <i class="fas fa-info-circle me-2 text-info"></i>Información
+                        <i class="fas fa-info-circle me-2 text-info"></i>¿Cómo funciona?
                     </h6>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <h6><i class="fas fa-database me-2"></i>Fuente de Datos</h6>
-                            <p class="small text-muted">
-                                Los resultados provienen de Wikipedia usando su API oficial, 
-                                garantizando información confiable y actualizada.
-                            </p>
+                            <div class="text-center p-3">
+                                <div class="mb-3">
+                                    <i class="fas fa-database fa-2x text-primary"></i>
+                                </div>
+                                <h6>API Oficial</h6>
+                                <p class="small text-muted mb-0">
+                                    Usamos la API oficial de Wikipedia para obtener información confiable y actualizada.
+                                </p>
+                            </div>
                         </div>
                         <div class="col-md-4">
-                            <h6><i class="fas fa-envelope me-2"></i>Envío por Correo</h6>
-                            <p class="small text-muted">
-                                Puedes enviar los resultados a tu email para consultarlos 
-                                posteriormente o compartirlos.
-                            </p>
+                            <div class="text-center p-3">
+                                <div class="mb-3">
+                                    <i class="fas fa-graduation-cap fa-2x text-success"></i>
+                                </div>
+                                <h6>Contenido Educativo</h6>
+                                <p class="small text-muted mb-0">
+                                    Wikipedia es una excelente fuente de información educativa y académica.
+                                </p>
+                            </div>
                         </div>
                         <div class="col-md-4">
-                            <h6><i class="fas fa-lightbulb me-2"></i>Sugerencias</h6>
-                            <p class="small text-muted">
-                                Usa términos específicos para mejores resultados. 
-                                Ej: "Álgebra lineal" en lugar de "matemáticas".
-                            </p>
+                            <div class="text-center p-3">
+                                <div class="mb-3">
+                                    <i class="fas fa-share-alt fa-2x text-warning"></i>
+                                </div>
+                                <h6>Compartir Resultados</h6>
+                                <p class="small text-muted mb-0">
+                                    Puedes enviar los resultados por correo para consultarlos o compartirlos.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 
 <script>
-function clearSearch() {
-    document.getElementById('palabra_clave').value = '';
-    document.getElementById('searchForm').submit();
-}
-
 // Mostrar loading al enviar
 document.getElementById('searchForm').addEventListener('submit', function(e) {
     const submitBtn = e.submitter;
@@ -205,11 +244,11 @@ document.getElementById('searchForm').addEventListener('submit', function(e) {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Procesando...';
         submitBtn.disabled = true;
         
-        // Restaurar después de 5 segundos (por si hay error)
+        // Restaurar después de 8 segundos
         setTimeout(() => {
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
-        }, 5000);
+        }, 8000);
     }
 });
 </script>
@@ -229,6 +268,10 @@ document.getElementById('searchForm').addEventListener('submit', function(e) {
 }
 
 .btn {
+    border-radius: 0.5rem;
+}
+
+.alert {
     border-radius: 0.5rem;
 }
 </style>
