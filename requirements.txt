@@ -11,3 +11,4 @@ asgiref==3.11.0
 sqlparse==0.5.3
 tzdata==2025.2
 soupsieve==2.8
+python-decouple==3.8
