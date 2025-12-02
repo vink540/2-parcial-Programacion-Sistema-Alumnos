@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+/* ======== LIGHT UI PREMIUM ======== */
+body {
+    background-color: #f5f6fa !important;
+    color: #333 !important;
+}
+
+.scraper-container {
+    margin-top: 40px;
+}
+
+.scraper-title {
+    font-weight: 700;
+    font-size: 2.2rem;
+    background: linear-gradient(90deg, #6a82fb, #fc5c7d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.scraper-subtitle {
+    color: #6c6f7f;
+    margin-bottom: 30px;
+}
+
+/* === Cards === */
+.custom-card, .results-card {
+    background-color: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e1e3ec;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transition: 0.25s;
+}
+
+.custom-card:hover, .results-card:hover {
+    transform: translateY(-3px);
+}
+
+/* === Inputs === */
+.search-input {
+    height: 48px;
+    font-size: 1.1rem;
+    background-color: #ffffff;
+    border: 1px solid #cdd2e1;
+    border-radius: 12px;
+    color: #333;
+    transition: 0.3s;
+}
+
+.search-input::placeholder {
+    color: #a1a4b2;
+}
+
+.search-input:focus {
+    border-color: #6a82fb;
+    box-shadow: 0 0 8px rgba(106,130,251,.4);
+    background-color: #fff;
+}
+
+/* === Button === */
+.search-btn {
+    height: 48px;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #6a82fb, #9d5dfc);
+    border: none;
+    color: white;
+    transition: 0.3s;
+}
+
+.search-btn:hover {
+    transform: scale(1.03);
+    filter: brightness(1.1);
+}
+
+/* === Checkbox === */
+.form-check-input {
+    border: 1px solid #bfc4d6;
+}
+
+.form-check-input:checked {
+    background-color: #6a82fb;
+    border-color: #6a82fb;
+}
+
+/* === Results Header === */
+.results-header {
+    background: linear-gradient(90deg, #6a82fb, #9d5dfc);
+    border-radius: 18px 18px 0 0;
+    color: white;
+}
+
+/* === Table === */
+.table {
+    color: #333;
+}
+
+.table thead th {
+    background-color: #eef0f8 !important;
+    border-color: #dce0eb;
+}
+
+.table tbody td {
+    background-color: #ffffff;
+    border-color: #e1e3ec;
+}
+
+.table tbody tr:hover td {
+    background-color: #f0f2f8;
+}
+
+/* Smooth fade-in */
+.fade-in {
+    animation: fadeIn .5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+</style>
+
+<div class="scraper-container fade-in">
+    <div class="col-md-12">
+
+        <h2 class="scraper-title">Scraping Educativo</h2>
+        <p class="scraper-subtitle">Busca información en Wikipedia con estilo profesional</p>
+
+        <div class="card custom-card mb-4">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-row align-items-center">
+                        <div class="col-md-8 mb-2">
+                            <input type="text" name="palabra_clave" 
+                                   class="form-control search-input" 
+                                   placeholder="Ejemplo: Álgebra, Física, Python, Historia..."
+                                   required>
+                        </div>
+
+                        <div class="col-md-4 mb-2">
+                            <button type="submit" class="btn btn-primary btn-block search-btn">
+                                🔍 Buscar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-check mt-3">
+                        <input type="checkbox" name="enviar_email" id="enviar_email" class="form-check-input">
+                        <label for="enviar_email" class="form-check-label">
+                            Enviar los resultados por email
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if resultados %}
+        <div class="card results-card fade-in">
+            <div class="card-header results-header">
+                <h5 class="mb-0">Resultados para "{{ request.POST.palabra_clave }}"</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
+                        <thead>
+                            <tr>
+                                <th>Campo</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for clave, valor in resultados %}
+                            <tr>
+                                <td><strong>{{ clave }}</strong></td>
+                                <td>{{ valor }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}
+
+
